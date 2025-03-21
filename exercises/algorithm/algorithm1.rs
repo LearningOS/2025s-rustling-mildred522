@@ -36,6 +36,9 @@ impl<T> Default for LinkedList<T> {
 }
 
 impl<T> LinkedList<T> {
+    fn take_head(&mut self) -> Option<T> {
+        self.start.map
+    }
     pub fn new() -> Self {
         Self {
             length: 0,

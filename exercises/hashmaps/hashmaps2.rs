@@ -53,7 +53,8 @@ mod tests {
         basket.insert(Fruit::Apple, 4);
         basket.insert(Fruit::Mango, 2);
         basket.insert(Fruit::Lychee, 5);
-
+        basket.insert(Fruit::Banana, 2);
+        basket.insert(Fruit::Pineapple, 3);
         basket
     }
 
