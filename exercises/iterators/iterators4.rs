@@ -3,9 +3,19 @@
 // Execute `rustlings hint iterators4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-pub fn factorial(num: u64) -> u64 {
+pub fn factorial(mut num: u64) -> u64 {
+    if num == 0 {
+        1
+    }
+    else {
+        let mut ans: u64 = 1;
+        while num >= 1 {
+            ans *= num;
+            num -= 1;
+        }
+        ans
+    }
     // Complete this function to return the factorial of num
     // Do not use:
     // - return
