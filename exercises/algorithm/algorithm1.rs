@@ -2,14 +2,14 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
+//use std::vec::*;
 
 #[derive(Debug)]
-struct Node<T> {
+struct Node<T> { //节点结构体
     val: T,
     next: Option<NonNull<Node<T>>>,
 }
@@ -23,7 +23,7 @@ impl<T> Node<T> {
     }
 }
 #[derive(Debug)]
-struct LinkedList<T> {
+struct LinkedList<T> { //链表结构体
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
@@ -35,10 +35,11 @@ impl<T> Default for LinkedList<T> {
     }
 }
 
-impl<T> LinkedList<T> {
-    fn take_head(&mut self) -> Option<T> {
-        self.start.map
-    }
+impl<T> LinkedList<T> 
+{
+    //fn take_head(&mut self) -> Option<T> {
+       // self.start.map
+    //}
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -72,26 +73,67 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
+	
 }
 
+impl<T> LinkedList<T> 
+where
+    T: PartialOrd + Clone, // 添加约束
+{
+    pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	{
+		let mut m_list = LinkedList::new();
+        let mut a = list_a.start;
+        let mut b = list_b.start;
+        while a.is_some() || b.is_some() {
+            match (a, b) {
+                (Some(node_a), Some(node_b)) => {
+                    let val_a = unsafe { &(*node_a.as_ptr()).val };
+                    let val_b = unsafe { &(*node_b.as_ptr()).val };
+    
+                    if val_a <= val_b {
+                        m_list.add(val_a.clone()); // 添加较小的值
+                        a = unsafe { (*node_a.as_ptr()).next }; // 更新指针
+                    } else {
+                        m_list.add(val_b.clone());
+                        b = unsafe { (*node_b.as_ptr()).next };
+                    }
+                }
+                (Some(node_a), None) => {
+                    let val_a = unsafe { &(*node_a.as_ptr()).val };
+                    m_list.add(val_a.clone());
+                    a = unsafe { (*node_a.as_ptr()).next };
+                }
+                (None, Some(node_b)) => {
+                    let val_b = unsafe { &(*node_b.as_ptr()).val };
+                    m_list.add(val_b.clone());
+                    b = unsafe { (*node_b.as_ptr()).next };
+                }
+                (None, None) => break,
+            }
+        }
+
+        m_list
+	}
+}
 impl<T> Display for LinkedList<T>
 where
     T: Display,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self.start {
-            Some(node) => write!(f, "{}", unsafe { node.as_ref() }),
-            None => Ok(()),
+        let mut current = self.start;
+        let mut first = true;
+        while let Some(node_ptr) = current {
+            let node = unsafe { node_ptr.as_ref() };
+            if first {
+                write!(f, "{}", node.val)?;
+                first = false;
+            } else {
+                write!(f, ", {}", node.val)?;
+            }
+            current = node.next;
         }
+        Ok(())
     }
 }
 
@@ -100,10 +142,7 @@ where
     T: Display,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self.next {
-            Some(node) => write!(f, "{}, {}", self.val, unsafe { node.as_ref() }),
-            None => write!(f, "{}", self.val),
-        }
+        write!(f, "{}", self.val)
     }
 }
 
